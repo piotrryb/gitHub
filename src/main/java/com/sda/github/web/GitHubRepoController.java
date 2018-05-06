@@ -23,8 +23,8 @@ public class GitHubRepoController {
     }
 
     @GetMapping("/getRepository/{user}/{repositoryName}")
-    public ResponseEntity<Object> getRepositoryByUserAndRepo(@PathVariable("user") String user,
-                                                                 @PathVariable("repositoryName") String repositoryName) {
+    public ResponseEntity<Object> getRepositoryByUserAndRepo
+            (@PathVariable("user") String user, @PathVariable("repositoryName") String repositoryName) {
         GitHubData response = gitHubRepoService.getRepoByUserAndRepoName(user, repositoryName);
         if (response.getError() != null) {
             return new ResponseEntity<>(response.getError(), HttpStatus.FORBIDDEN);
@@ -33,8 +33,8 @@ public class GitHubRepoController {
     }
 
     @GetMapping("/getRepository/{user}/{repositoryName}/commits")
-    public ResponseEntity<List<CommitData>> getCommitsForRepositoryByUserAndRepo(@PathVariable("user") String user,
-                                                                                 @PathVariable("repositoryName") String repositoryName) {
+    public ResponseEntity<List<CommitData>> getCommitsForRepositoryByUserAndRepo
+            (@PathVariable("user") String user, @PathVariable("repositoryName") String repositoryName) {
         List<CommitData> response = gitHubRepoService.getCommitsByUserAndRepoName(user, repositoryName);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

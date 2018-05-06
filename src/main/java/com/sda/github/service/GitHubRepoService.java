@@ -39,7 +39,7 @@ public class GitHubRepoService {
             CommitData[] response = restTemplate.getForObject(URL + "/commits",
                     CommitData[].class, username, repositoryName);
             List<CommitData> commitDataList = Arrays.asList(response);
-            return commitDataList.subList(0, 3);
+            return commitDataList.size() > 3 ? commitDataList.subList(0, 3) : commitDataList;
         } catch (HttpClientErrorException ex) {
             throw new SDAException(ex.getMessage());
         }
