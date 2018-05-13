@@ -9,15 +9,15 @@ import javax.persistence.*;
 @Entity
 @Data
 public class GitHubData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
     private OwnerData owner;
     @JsonProperty("full_name")
+    @Column(unique = true)
     private String fullName;
     private String description;
     private String url;

@@ -8,13 +8,12 @@ import javax.persistence.*;
 @Entity
 @Data
 public class CommitData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
     private String url;
-    @ManyToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(referencedColumnName = "id")
     private SingleCommit commit;
 }

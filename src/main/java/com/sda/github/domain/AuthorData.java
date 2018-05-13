@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 public class AuthorData {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore

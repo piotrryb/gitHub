@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface GitHubDataRepository extends JpaRepository<GitHubData, Long> {
+    GitHubData getByFullName(String fullName);
+
+    boolean existsByFullName(String fullName);
 }

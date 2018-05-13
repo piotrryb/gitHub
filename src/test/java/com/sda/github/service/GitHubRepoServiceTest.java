@@ -4,6 +4,9 @@ import com.sda.github.domain.CommitData;
 import com.sda.github.domain.GitHubData;
 import com.sda.github.domain.OwnerData;
 import com.sda.github.errorHandling.SDAException;
+import com.sda.github.repository.CommitDataRepository;
+import com.sda.github.repository.GitHubDataRepository;
+import com.sda.github.repository.OwnerDataRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,12 +34,23 @@ public class GitHubRepoServiceTest {
     private static final String URL_COMMITS = "https://api.github.com/repos/{owner}/{repo}/commits";
     private static final String TEST_USER = "test_user";
     private static final String TEST_REPO = "test_repo";
+    private static final String FULL_NAME = TEST_USER + "/" + TEST_REPO;
     private static final String ERROR_MESSAGE = "test_error";
     private static final String URL_1 = "url_1";
     private static final String URL_2 = "url_2";
 
     @Mock
+    private GitHubDataRepository gitHubDataRepository;
+
+    @Mock
+    private OwnerDataRepository ownerDataRepository;
+
+    @Mock
+    private CommitDataRepository commitDataRepository;
+
+    @Mock
     private RestTemplate restTemplate;
+
 
     @InjectMocks
     private GitHubRepoService gitHubRepoService;
@@ -45,7 +59,7 @@ public class GitHubRepoServiceTest {
     public void shouldReturnValidResponseForQuery() {
         // given
         OwnerData ownerData = new OwnerData();
-        ownerData.setLogin("test_login");
+        ownerData.setLogin(TEST_USER);
         ownerData.setSiteAdmin(false);
 
         GitHubData gitHubData = new GitHubData();
@@ -55,8 +69,12 @@ public class GitHubRepoServiceTest {
 
         when(restTemplate.getForObject(any(String.class), eq(GitHubData.class),
                 eq(TEST_USER), eq(TEST_REPO))).thenReturn(gitHubData);
+        when(gitHubDataRepository.existsByFullName(FULL_NAME)).thenReturn(false);
+        when(ownerDataRepository.existsByLogin(TEST_USER)).thenReturn(false);
+
         // when
         GitHubData underTest = gitHubRepoService.getRepoByUserAndRepoName(TEST_USER, TEST_REPO);
+
         // then
         assertThat(underTest.getFullName()).isEqualTo(gitHubData.getFullName());
     }
@@ -66,8 +84,10 @@ public class GitHubRepoServiceTest {
         // given
         when(restTemplate.getForObject(URL, GitHubData.class, TEST_USER, TEST_REPO))
                 .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, ERROR_MESSAGE));
+
         // when
         GitHubData underTest = gitHubRepoService.getRepoByUserAndRepoName(TEST_USER, TEST_REPO);
+
         // then
         assertThat(underTest.getError()).isEqualTo(HttpStatus.FORBIDDEN.value() + " " + ERROR_MESSAGE);
     }
@@ -84,8 +104,11 @@ public class GitHubRepoServiceTest {
 
         when(restTemplate.getForObject(URL_COMMITS, CommitData[].class,
                 TEST_USER, TEST_REPO)).thenReturn(commitData);
+        when(commitDataRepository.existsByUrlContaining(URL_COMMITS)).thenReturn(false);
+
         // when
         List<CommitData> underTest = gitHubRepoService.getCommitsByUserAndRepoName(TEST_USER, TEST_REPO);
+
         // then
         assertThat(underTest.size()).isEqualTo(commitData.length);
         assertThat(underTest.stream()
@@ -100,6 +123,7 @@ public class GitHubRepoServiceTest {
         // given
         when(restTemplate.getForObject(URL_COMMITS, CommitData[].class, TEST_USER, TEST_REPO))
                 .thenThrow(new HttpClientErrorException(HttpStatus.FORBIDDEN, ERROR_MESSAGE));
+
         // when
         gitHubRepoService.getCommitsByUserAndRepoName(TEST_USER, TEST_REPO);
     }

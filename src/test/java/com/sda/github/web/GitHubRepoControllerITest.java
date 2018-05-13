@@ -31,7 +31,8 @@ public class GitHubRepoControllerITest {
 
     @Test
     public void shouldReturnValidResponse() throws Exception {
-        mockMvc.perform(get(URL, USERNAME, REPOSITORY)).andDo(print())
+        mockMvc.perform(get(URL, USERNAME, REPOSITORY))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.owner.login").value(USERNAME));
     }
@@ -45,7 +46,8 @@ public class GitHubRepoControllerITest {
 
     @Test
     public void shouldReturnListOfCommits() throws Exception {
-        mockMvc.perform(get(URL + COMMITS, USERNAME, REPOSITORY)).andDo(print())
+        mockMvc.perform(get(URL + COMMITS, USERNAME, REPOSITORY))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].commit.author.name").value("lbacic"));
     }
